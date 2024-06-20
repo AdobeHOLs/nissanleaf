@@ -1,160 +1,69 @@
+/*
+ * Fragment Block
+ * Include content on a page as a fragment.
+ * https://www.aem.live/developer/block-collection/fragment
+ */
 
 /**
- * loads and decorates the form (email subscription) block element
- * @param {Element} block The form block element
+ * Loads a fragment.
+ * @param {string} path The path to the fragment
+ * @returns {HTMLElement} The root element of the fragment
  */
-import createField from './form-fields.js';
-import { createOptimizedPicture, sampleRUM } from '../../scripts/aem.js';
-
-async function createForm(formHref) {
-  const { pathname } = new URL(formHref);
-  const resp = await fetch(pathname);
-  const json = await resp.json();
-
-  const form = document.createElement('form');
-  form.classList.add('email-sub-form');
-  // eslint-disable-next-line prefer-destructuring
-  form.dataset.action = pathname.split('.json')[0];
-
-  const fields = await Promise.all(json.data.map((fd) => createField(fd, form)));
-  fields.forEach((field) => {
-    if (field) {
-      form.append(field);
-    }
-  });
-
-  // group fields into fieldsets
-  const fieldsets = form.querySelectorAll('fieldset');
-  fieldsets.forEach((fieldset) => {
-    form.querySelectorAll(`[data-fieldset="${fieldset.name}"`).forEach((field) => {
-      fieldset.append(field);
-    });
-  });
-
-  return form;
-}
-
-function generatePayload(form) {
-  const payload = {};
-
-  [...form.elements].forEach((field) => {
-    if (field.name && field.type !== 'submit' && !field.disabled) {
-      if (field.type === 'radio') {
-        if (field.checked) payload[field.name] = field.value;
-      } else if (field.type === 'checkbox') {
-        if (field.checked) payload[field.name] = payload[field.name] ? `${payload[field.name]},${field.value}` : field.value;
-      } else {
-        payload[field.name] = field.value;
-      }
-    }
-  });
-  return payload;
-}
-
-function handleSubmitError(form, error) {
-  // eslint-disable-next-line no-console
-  console.error(error);
-  form.querySelector('button[type="submit"]').disabled = false;
-  sampleRUM('form:error', { source: '.form', target: error.stack || error.message || 'unknown error' });
-}
-
-async function handleSubmit(form) {
-  if (form.getAttribute('data-submitting') === 'true') return;
-
-  const submit = form.querySelector('button[type="submit"]');
-  try {
-    form.setAttribute('data-submitting', 'true');
-    submit.disabled = true;
-
-    // create payload
-    const payload = generatePayload(form);
-    const response = await fetch(form.dataset.action, {
-      method: 'POST',
-      body: JSON.stringify({ data: payload }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.ok) {
-      sampleRUM('form:submit', { source: '.form', target: form.dataset.action });
-      if (form.dataset.confirmation) {
-        window.location.href = form.dataset.confirmation;
-      }
-    } else {
-      const error = await response.text();
-      throw new Error(error);
-    }
-  } catch (e) {
-    handleSubmitError(form, e);
-  } finally {
-    form.setAttribute('data-submitting', 'false');
+export async function loadForm(formpath) {
+  if (formpath) {
+     var options = {path:formpath, dataRef:"", themepath:"", CSS_Selector:".customafsection"};
+     alert(options.path);
+     var loadAdaptiveForm = function(options){
+     //alert(options.path);
+        if(options.path) {
+            // options.path refers to the path of the adaptive form
+            // For Example: /content/forms/af/ABC, where ABC is the adaptive form
+            // Note: If AEM server is running on a context path, the adaptive form URL must contain the context path
+            var path = options.path;
+            path += "/jcr:content/guideContainer.html";
+            $.ajax({
+                url  : path ,
+                type : "GET",
+                data : {
+                    // Set the wcmmode to be disabled
+                    wcmmode : "disabled"
+                    // Set the data reference, if any
+                   // "dataRef": options.dataRef
+                    // Specify a different theme for the form object
+                  //  "themeOverride" : options.themepath
+                },
+                async: false,
+                success: function (data) {
+                    // If jquery is loaded, set the inner html of the container
+                    // If jquery is not loaded, use APIs provided by document to set the inner HTML but these APIs would not evaluate the script tag in HTML as per the HTML5 spec
+                    // For example: document.getElementById().innerHTML
+                    if(window.$ && options.CSS_Selector){
+                        // HTML API of jquery extracts the tags, updates the DOM, and evaluates the code embedded in the script tag.
+                        $(options.CSS_Selector).html(data);
+                    }
+                },
+                error: function (data) {
+                    // any error handler
+                }
+            });
+        } else {
+            if (typeof(console) !== "undefined") {
+                console.log("Path of Adaptive Form not specified to loadAdaptiveForm");
+            }
+        }
+     }(options);
+    
   }
-}
-
-function modifyHTML(block) {
-  const container = block.querySelector('.form.block > div');
-  container.classList.remove('form', 'block');
-  container.classList.add('form-block-wrapper');
-
-  // Find and update the nested divs' classes
-  const nestedDivs = container.querySelectorAll('div');
-  nestedDivs.forEach((div) => {
-    if (!div.querySelector('picture')) {
-      div.classList.add('form-info');
-    } else {
-      div.classList.add('form-image');
-    }
-  });
-
-  container.querySelectorAll('img').forEach((img) => {
-    img.closest('picture').replaceWith(
-      createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]),
-    );
-  });
-
-  const imageEl = container.querySelector('img');
-  imageEl.height = '200';
-  imageEl.width = '200';
 }
 
 export default async function decorate(block) {
-  // Check if json sheet is provided
-  const formLink = block.querySelector('a[href$=".json"]');
-  if (!formLink) return;
-  let jsonPath;
+  const link = block.querySelector('a');
+  const path = link ? link.getAttribute('href') : block.textContent.trim();
+  
+  const formdiv = document.createElement('div');
+  formdiv.classList.add('customafsection');
+  block.append(formdiv);
+  
+  const form = await loadForm(path);
 
-  async function getData() {
-    [...block.children].forEach((child) => {
-      const linkEl = child.querySelector('a[href$=".json"]');
-      if (linkEl) {
-        jsonPath = linkEl.getAttribute('href');
-        child.remove();
-      }
-    });
-    const configPath = `${window.location.origin}${jsonPath}`;
-    const form = await createForm(configPath);
-    modifyHTML(block);
-    const formInfoElmt = block.querySelector('.form-info');
-    formInfoElmt.append(form);
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const valid = form.checkValidity();
-      if (valid) {
-        handleSubmit(form);
-      } else {
-        const firstInvalidEl = form.querySelector(':invalid:not(fieldset)');
-        if (firstInvalidEl) {
-          firstInvalidEl.focus();
-          firstInvalidEl.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    });
-  }
-
-  function init() {
-    getData();
-  }
-
-  init();
 }
