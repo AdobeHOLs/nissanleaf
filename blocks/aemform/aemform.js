@@ -57,6 +57,11 @@ export async function loadForm(formpath) {
 }
 
 export default async function decorate(block) {
+
+  var script = document.createElement('script');
+  script.src = 'https://code.jquery.com/jquery-3.6.3.min.js';
+  document.getElementsByTagName('head')[0].appendChild(script);
+  
   const link = block.querySelector('a');
   const path = link ? link.getAttribute('href') : block.textContent.trim();
   
