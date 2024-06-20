@@ -17,9 +17,30 @@ import {
  * @param {string} path The path to the fragment
  * @returns {HTMLElement} The root element of the fragment
  */
-export async function loadForm(formpath) {
+export async function loadForm(formdiv, formpath) {
   if (formpath) {
-     var options = {path:formpath, dataRef:"", themepath:"", CSS_Selector:".customafsection"};
+    
+        // Create the container div element
+        //const container = document.createElement("div");
+        
+        formdiv.id = "iframe-container";
+
+        // Create the iframe element
+        const iframe = document.createElement("iframe");
+        iframe.src = formpath;
+        iframe.width = "600";
+        iframe.height = "400";
+        iframe.style.border = "0"; // No border
+
+        // Append the iframe to the container
+        formdiv.appendChild(iframe);
+
+        // Append the container to the body of the document
+        //document.body.appendChild(container);
+
+
+    /*
+    var options = {path:formpath, dataRef:"", themepath:"", CSS_Selector:".customafsection"};
      alert(options.path);
      var loadAdaptiveForm = function(options){
      //alert(options.path);
@@ -29,35 +50,7 @@ export async function loadForm(formpath) {
             // Note: If AEM server is running on a context path, the adaptive form URL must contain the context path
             var path = options.path;
            // path += "/jcr:content/guideContainer.html";
-           
-           
-           /* $.ajax({
-                url  : path ,
-                type : "GET",
-                data : {
-                    // Set the wcmmode to be disabled
-                    wcmmode : "disabled"
-                    // Set the data reference, if any
-                   // "dataRef": options.dataRef
-                    // Specify a different theme for the form object
-                  //  "themeOverride" : options.themepath
-                },
-                async: false,
-                success: function (data) {
-                    // If jquery is loaded, set the inner html of the container
-                    // If jquery is not loaded, use APIs provided by document to set the inner HTML but these APIs would not evaluate the script tag in HTML as per the HTML5 spec
-                    // For example: document.getElementById().innerHTML
-                    if(window.$ && options.CSS_Selector){
-                        // HTML API of jquery extracts the tags, updates the DOM, and evaluates the code embedded in the script tag.
-                        $(options.CSS_Selector).html(data);
-                    }
-                },
-                error: function (data) {
-                    // any error handler
-                }
-            });
-*/
-
+          
 
 
             fetch(path, { method: "GET" })
@@ -86,6 +79,7 @@ export async function loadForm(formpath) {
             }
         }
      }(options);
+     */
     
   }
 }
@@ -98,7 +92,7 @@ export default async function decorate(block) {
   formdiv.classList.add('customafsection');
   block.append(formdiv);
   
-  const form = await loadForm(path);
+  const form = await loadForm(formdiv,path);
 
 
 
