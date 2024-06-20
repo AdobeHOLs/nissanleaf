@@ -1,5 +1,5 @@
 mountpoints:
-  /: https://adobe.sharepoint.com/sites/edsdemo/Shared%20Documents/lpbeds/shmehta/nissanleaf/website
+  /: https://drive.google.com/drive/folders/176tE0tB9T51lMPMrozFpbTe4OFMNUPs_
 
 folders:
   /products/: /products/default
