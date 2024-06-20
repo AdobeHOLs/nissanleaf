@@ -68,8 +68,8 @@ export async function loadForm(formpath) {
             return response.text();
         })
         .then(data => {
-          alert(data);
-                document.querySelector(options.CSS_Selector).innerHTML = data;
+         // alert(data);
+          document.querySelector(options.CSS_Selector).innerHTML = data;
             
         })
         .catch(error => {
