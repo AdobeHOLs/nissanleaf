@@ -20,9 +20,8 @@ import {
 export async function loadForm(formdiv, formpath) {
   if (formpath) {
     
-        // Create the container div element
-        //const container = document.createElement("div");
-        
+    //Embed iframe approach
+   /* 
         formdiv.id = "iframe-container";
 
         // Create the iframe element
@@ -38,8 +37,8 @@ export async function loadForm(formdiv, formpath) {
         // Append the container to the body of the document
         //document.body.appendChild(container);
 
-
-    /*
+*/
+    
     var options = {path:formpath, dataRef:"", themepath:"", CSS_Selector:".customafsection"};
      alert(options.path);
      var loadAdaptiveForm = function(options){
@@ -79,7 +78,7 @@ export async function loadForm(formdiv, formpath) {
             }
         }
      }(options);
-     */
+     
     
   }
 }
