@@ -4,6 +4,14 @@
  * https://www.aem.live/developer/block-collection/fragment
  */
 
+import {
+  decorateMain,
+} from '../../scripts/scripts.js';
+
+import {
+  loadBlocks,
+} from '../../scripts/aem.js';
+
 /**
  * Loads a fragment.
  * @param {string} path The path to the fragment
@@ -21,7 +29,9 @@ export async function loadForm(formpath) {
             // Note: If AEM server is running on a context path, the adaptive form URL must contain the context path
             var path = options.path;
             path += "/jcr:content/guideContainer.html";
-            $.ajax({
+           
+           
+           /* $.ajax({
                 url  : path ,
                 type : "GET",
                 data : {
@@ -46,6 +56,30 @@ export async function loadForm(formpath) {
                     // any error handler
                 }
             });
+*/
+
+
+
+            fetch('${path}?wcmmode=disabled', { method: "GET" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(data => {
+          alert(data);
+                document.querySelector(options.CSS_Selector).innerHTML = data;
+            
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            // Handle error
+        });
+
+
+
+
         } else {
             if (typeof(console) !== "undefined") {
                 console.log("Path of Adaptive Form not specified to loadAdaptiveForm");
@@ -57,11 +91,6 @@ export async function loadForm(formpath) {
 }
 
 export default async function decorate(block) {
-
-  var script = document.createElement('script');
-  script.src = 'https://code.jquery.com/jquery-3.6.3.min.js';
-  document.getElementsByTagName('head')[0].appendChild(script);
-  
   const link = block.querySelector('a');
   const path = link ? link.getAttribute('href') : block.textContent.trim();
   
@@ -69,6 +98,17 @@ export default async function decorate(block) {
   formdiv.classList.add('customafsection');
   block.append(formdiv);
   
-  //const form = await loadForm(path);
+  const form = await loadForm(path);
 
+
+
+  /*
+  if (form) {
+    const formSection = fragment.querySelector(':scope .section');
+    if (formSection) {
+      block.closest('.section').classList.add(...fragmentSection.classList);
+      block.closest('.fragment').replaceWith(...fragment.childNodes);
+    }
+  }
+  */
 }
