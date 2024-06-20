@@ -28,7 +28,7 @@ export async function loadForm(formpath) {
             // For Example: /content/forms/af/ABC, where ABC is the adaptive form
             // Note: If AEM server is running on a context path, the adaptive form URL must contain the context path
             var path = options.path;
-            path += "/jcr:content/guideContainer.html";
+           // path += "/jcr:content/guideContainer.html";
            
            
            /* $.ajax({
@@ -60,7 +60,7 @@ export async function loadForm(formpath) {
 
 
 
-            fetch(path+"?wcmmode=disabled", { method: "GET" })
+            fetch(path, { method: "GET" })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
