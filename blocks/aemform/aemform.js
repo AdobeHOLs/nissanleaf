@@ -60,7 +60,7 @@ export async function loadForm(formpath) {
 
 
 
-            fetch('${path}?wcmmode=disabled', { method: "GET" })
+            fetch(path+"?wcmmode=disabled", { method: "GET" })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
