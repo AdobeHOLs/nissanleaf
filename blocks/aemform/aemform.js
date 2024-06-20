@@ -69,6 +69,6 @@ export default async function decorate(block) {
   formdiv.classList.add('customafsection');
   block.append(formdiv);
   
-  const form = await loadForm(path);
+  //const form = await loadForm(path);
 
 }
