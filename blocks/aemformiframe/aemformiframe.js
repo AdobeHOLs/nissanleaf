@@ -29,7 +29,7 @@ export async function loadForm(formdiv, formpath) {
         const iframe = document.createElement("iframe");
         iframe.src = formpath;
         iframe.style.width = "100%";
-        iframe.style.height = "900px"; // Set height to 500 pixels
+        iframe.style.height = "3500px"; // Set height to 500 pixels
         iframe.style.border = "0"; // No border
         iframe.style.overflow = "hidden"; // Hide vertical scroll
     iframe.scrolling = "no"; // Disable scrolling
