@@ -28,9 +28,11 @@ export async function loadForm(formdiv, formpath) {
         // Create the iframe element
         const iframe = document.createElement("iframe");
         iframe.src = formpath;
-        iframe.width = "100%";
-        iframe.height = "100vh";
+        iframe.style.width = "100%";
+        iframe.style.height = "500px"; // Set height to 500 pixels
         iframe.style.border = "0"; // No border
+        iframe.style.overflow = "hidden"; // Hide vertical scroll
+
 
         // Append the iframe to the container
         formdiv.appendChild(iframe);
