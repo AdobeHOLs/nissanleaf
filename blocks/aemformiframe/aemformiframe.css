@@ -1,3 +1,6 @@
 .aemformiframe a {
     display: none;
   }
+.customafsection {
+      margin-top: 75px; /* Adjust the value as needed */
+}
